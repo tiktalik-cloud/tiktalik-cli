@@ -45,7 +45,7 @@ def print_instance(i):
 		print "  running image %s (%s)" % (i.vpsimage.name, i.vpsimage.uuid)
 
 	if i.actions:
-		print "  lastest operations:"
+		print "  recent operations:"
 		map(print_action, i.actions)
 	
 	if i.gross_cost_per_hour:
