@@ -2,11 +2,17 @@ from setuptools import setup
 
 setup(
 	name="tiktalik-cli",
-	version="0.1",
-	description="Tiktalik commandline utility",
-	author="Tiktalik.com",
+	version="1.0",
+	description="Tiktalik Computing commandline utility",
+	author="Techstorage sp. z o.o.",
 	author_email="kontakt@tiktalik.com",
-	url="http://tiktalik.com",
+	url="http://www.tiktalik.com",
+	classifiers=[
+		"Programming Language :: Python",
+		"Topic :: Internet",
+		"Topic :: Utilities",
+		"License :: OSI Approved :: MIT License",
+	],
 
 	packages=["tiktalik_cli", "tiktalik_cli.command"],
 	entry_points={
@@ -15,5 +21,5 @@ setup(
 			]
 		},
 
-	install_requires=["tiktalik-python"]
+	install_requires=["tiktalik>=1.0"]
 )
