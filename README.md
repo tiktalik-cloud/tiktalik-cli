@@ -8,15 +8,13 @@ user to perform core operations on the [Tiktalik Cloud Computing](http://www.tik
  * [tiktalik-python](https://github.com/tiktalik-cloud/tiktalik-python)
  * Python 2.7
 
+Note that package dependencies are automatically installed by pip.
+
 ## Installation
 
-Install [tiktalik-python](https://github.com/tiktalik-cloud/tiktalik-python) first:
+Install using pip:
 
-`$ pip install https://github.com/tiktalik-cloud/tiktalik-python/archive/master.zip`
-
-Then install the CLI itself:
-
-`$ pip install https://github.com/tiktalik-cloud/tiktalik-cli/archive/master.zip`
+`$ pip install tiktalik-cli`
 
 ## Authentication
 
