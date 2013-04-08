@@ -81,7 +81,6 @@ class CreateInstance(Command):
 
 		# List of network uuids instead of names
 		networks = [networks[n] for n in self.args.networks]
-		print networks
 
 		# Validate image existence
 		try:
