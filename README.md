@@ -41,8 +41,8 @@ To get a help on a specific command, run:
 
 `$ tiktalik COMMAND --help`
 
-Commands that operate on instances (eg. `start`, `stop`) take either instance name
-(`-n` argument) or UUID (`-u`).
+We also have [a tutorial](https://www.tiktalik.com/docs/cli-howto/) to quickly get
+you started.
 
 ## License
 
