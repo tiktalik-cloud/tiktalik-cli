@@ -18,10 +18,10 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import os, errno, ConfigParser
-from .command import Command, CommandError
+from .command import ComputingCommand, CommandError
 from .. import auth
 
-class InitAuth(Command):
+class InitAuth(ComputingCommand):
 	@classmethod
 	def add_parser(cls, parser, subparser):
 		p = subparser.add_parser("init-auth", description="Store auth information locally %s" % auth.CONFIG_FILE_PATH)

@@ -20,10 +20,10 @@
 from tiktalik.computing.objects import Instance
 from tiktalik.error import TiktalikAPIError
 
-from .command import Command, CommandError
-import util
+from .command import ComputingCommand, CommandError
+from . import util
 
-class ListInstances(Command):
+class ListInstances(ComputingCommand):
 	@classmethod
 	def add_parser(cls, parser, subparser):
 		p = subparser.add_parser("list", description="List instances", parents=[parser])
@@ -52,7 +52,7 @@ class ListInstances(Command):
 			print "%s  %s %s" % (instance.hostname, instance.uuid, "Running" if instance.running else "Not running")
 
 
-class CreateInstance(Command):
+class CreateInstance(ComputingCommand):
 	@classmethod
 	def add_parser(cls, parent, subparser):
 		p = subparser.add_parser("create-instance", description="Create a new instance.", parents=[parent])
@@ -130,7 +130,7 @@ class CreateInstance(Command):
 		return sz
 
 
-class InstanceCommand(Command):
+class InstanceCommand(ComputingCommand):
 	"""
 	Base class for commands that operate on existing instances, eg. start, stop, info.
 	"""

@@ -50,3 +50,32 @@ def print_instance(i):
 	
 	if i.gross_cost_per_hour:
 		print "  cost per hour: %.5f PLN/h" % i.gross_cost_per_hour
+
+def print_http_balancer(w):
+	"""
+	Helper for printing HTTPBalancer details.
+	"""
+
+	print "%s (%s) %s" % (w.name, w.uuid, "enabled" if w.enabled else "disabled")
+	print "  address:", w.address
+
+	if not w.domains:
+		print "  no domains"
+	else:
+		print "  domains:"
+		for d in w.domains:
+			print "    %s" % d
+
+	if not w.backends:
+		print "  no backends"
+	else:
+		print "  backends:"
+		for b in w.backends:
+			print "    %s:%i, weight=%i (%s)" % (b.ip, b.port, b.weight, b.uuid)
+
+	if w.history:
+		print "  recent actions:"
+		for h in w.history:
+			print "    %s: (%s %s) %s %s" % (h.time, h.auth, h.ip, h.action, h.arguments if h.arguments else "")
+
+	print

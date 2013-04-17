@@ -19,9 +19,9 @@
 
 from tiktalik.error import TiktalikAPIError
 
-from .command import Command, CommandError
+from .command import ComputingCommand, CommandError
 
-class ListImages(Command):
+class ListImages(ComputingCommand):
 	@classmethod
 	def add_parser(cls, parent, subparser):
 		subparser.add_parser("list-images", description="List all available VPS Images.", parents=[parent])
@@ -33,7 +33,7 @@ class ListImages(Command):
 			print '%s "%s", type=%s %s' % (i.uuid, i.name, i.type, "(private)" if not i.is_public else "")
 
 
-class DeleteImage(Command):
+class DeleteImage(ComputingCommand):
 	@classmethod
 	def add_parser(cls, parent, subparser):
 		p = subparser.add_parser("delete-image", description="Delete an image.", parents=[parent])

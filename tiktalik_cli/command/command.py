@@ -18,6 +18,7 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 from tiktalik.computing import ComputingConnection
+from tiktalik.loadbalancer import HTTPBalancerConnection
 from .. import auth
 
 class CommandError(Exception):
@@ -27,9 +28,9 @@ class CommandAborted(Exception):
 	pass
 
 class Command(object):
-	def __init__(self, args, keyid, secret):
+	def __init__(self, args, keyid, secret, connection_cls):
 		self.args = args
-		self.conn = ComputingConnection(keyid, secret)
+		self.conn = connection_cls(keyid, secret)
 
 	@classmethod
 	def add_parser(cls, parser, subparser):
@@ -53,3 +54,11 @@ class Command(object):
 		else:
 			return False
 
+class ComputingCommand(Command):
+	def __init__(self, args, keyid, secret):
+		super(ComputingCommand, self).__init__(args, keyid, secret, ComputingConnection)
+
+
+class HTTPBalancerCommand(Command):
+	def __init__(self, args, keyid, secret):
+		super(HTTPBalancerCommand, self).__init__(args, keyid, secret, HTTPBalancerConnection)
