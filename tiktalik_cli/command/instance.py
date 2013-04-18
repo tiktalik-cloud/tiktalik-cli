@@ -57,7 +57,7 @@ class CreateInstance(Command):
 	def add_parser(cls, parent, subparser):
 		p = subparser.add_parser("create-instance", description="Create a new instance.", parents=[parent])
 		p.add_argument("image_uuid", help="UUID of a VPS Image that should be used.")
-		p.add_argument("size", help='Instance size (in units). Allowed values: 0.25, 0.5, 1 - 15, "cpuhog".')
+		p.add_argument("size", help='Instance size (in units). Allowed values: 0.25, 0.5, 1 - 15, "cpuhog", "cpuhog4".')
 		p.add_argument("hostname", help="Hostname set at installation time.")
 		p.add_argument("-n", dest="networks", metavar="NETWORK_NAME", action="append",
 			help="Attach these networks to the new instance. Use the list-networks command to list available networks.")
@@ -105,11 +105,11 @@ class CreateInstance(Command):
 	def _parse_instance_size(self, sz):
 		"""
 		Parse instance size passed as string and validate it.
-		Valid values are: 0.25, 0.5, integers 1-15, "cpuhog"
+		Valid values are: 0.25, 0.5, integers 1-15, "cpuhog", "cpuhog4"
 		Raise CommandError if `sz` is not a valid size.
 		"""
 
-		if sz == "cpuhog":
+		if sz in ("cpuhog", "cpuhog4"):
 			return sz
 
 		try:
