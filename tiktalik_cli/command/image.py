@@ -19,7 +19,7 @@
 
 from tiktalik.error import TiktalikAPIError
 
-from .command import Command
+from .command import Command, CommandError
 
 class ListImages(Command):
 	@classmethod
