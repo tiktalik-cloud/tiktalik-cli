@@ -22,6 +22,7 @@
 
 import argparse, textwrap, inspect
 
+from tiktalik.error import TiktalikAPIError
 from . import command, auth
 
 def main():
@@ -62,7 +63,7 @@ You can fix this by executing:
 		print textwrap.fill(msg, 76)
 		print
 		print '    chmod 600 %s' % auth.CONFIG_FILE_PATH
-	except command.CommandError as e:
+	except (command.CommandError, TiktalikAPIError) as e:
 		print textwrap.fill("Error: " + str(e), 76)
 	except auth.AuthError as e:
 		print textwrap.fill("Error: " + str(e), 76)
