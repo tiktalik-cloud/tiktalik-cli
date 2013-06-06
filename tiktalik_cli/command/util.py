@@ -41,6 +41,8 @@ def print_instance(i):
 		print "  network interfaces:"
 		map(print_iface, i.interfaces)
 
+	print "  default password: %s" % i.default_password
+
 	if i.vpsimage:
 		print "  running image %s (%s)" % (i.vpsimage.name, i.vpsimage.uuid)
 
