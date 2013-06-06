@@ -30,7 +30,8 @@ class CommandAborted(Exception):
 class Command(object):
 	def __init__(self, args, keyid, secret, connection_cls):
 		self.args = args
-		self.conn = connection_cls(keyid, secret)
+		if connection_cls != None:
+			self.conn = connection_cls(keyid, secret)
 
 	@classmethod
 	def add_parser(cls, parser, subparser):
@@ -61,7 +62,7 @@ class Command(object):
 
 class GeneralCommand(Command):
 	def __init__(self, args, keyid, secret):
-		super(ComputingCommand, self).__init__(args, keyid, secret, None)
+		super(GeneralCommand, self).__init__(args, keyid, secret, None)
 
 class ComputingCommand(Command):
 	def __init__(self, args, keyid, secret):
