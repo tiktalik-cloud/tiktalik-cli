@@ -17,9 +17,9 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-from .command import ComputingCommand
+from .command import ComputingNetworkCommand
 
-class ListNetworks(ComputingCommand):
+class ListNetworks(ComputingNetworkCommand):
 	@classmethod
 	def add_parser(cls, parent, subparser):
 		subparser.add_parser("list-networks", description="List all available networks.", parents=[parent])
