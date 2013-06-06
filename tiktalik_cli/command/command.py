@@ -30,11 +30,16 @@ class CommandAborted(Exception):
 class Command(object):
 	def __init__(self, args, keyid, secret, connection_cls):
 		self.args = args
-		self.conn = connection_cls(keyid, secret)
+		if connection_cls != None:
+			self.conn = connection_cls(keyid, secret)
 
 	@classmethod
 	def add_parser(cls, parser, subparser):
 		return None
+
+	@classmethod
+	def get_cmd_group_name(cls):
+		return "General commands"
 
 	def execute(self):
 		raise NotImplementedError()
@@ -54,11 +59,33 @@ class Command(object):
 		else:
 			return False
 
+
+class GeneralCommand(Command):
+	def __init__(self, args, keyid, secret):
+		super(GeneralCommand, self).__init__(args, keyid, secret, None)
+
 class ComputingCommand(Command):
 	def __init__(self, args, keyid, secret):
 		super(ComputingCommand, self).__init__(args, keyid, secret, ComputingConnection)
 
+	@classmethod
+	def get_cmd_group_name(cls):
+		return "Computing commands"
+
+class ComputingImageCommand(ComputingCommand):
+	@classmethod
+	def get_cmd_group_name(cls):
+		return "Computing image commands"
+
+class ComputingNetworkCommand(ComputingCommand):
+	@classmethod
+	def get_cmd_group_name(cls):
+		return "Computing network commands"
 
 class HTTPBalancerCommand(Command):
 	def __init__(self, args, keyid, secret):
 		super(HTTPBalancerCommand, self).__init__(args, keyid, secret, HTTPBalancerConnection)
+
+	@classmethod
+	def get_cmd_group_name(cls):
+		return "HTTP balancer commands"

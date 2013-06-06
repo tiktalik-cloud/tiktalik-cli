@@ -20,7 +20,7 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import argparse, textwrap, inspect
+import argparse, textwrap, inspect, sys
 
 from tiktalik.error import TiktalikAPIError
 from . import command, auth
@@ -29,18 +29,31 @@ def main():
 	parent_parser = argparse.ArgumentParser(add_help=False)
 	auth.add_parser_arguments(parent_parser)
 
-	parser = argparse.ArgumentParser()
+	parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter)
 	subparser = parser.add_subparsers(title="Commands", dest="command")
 
-	cmd2cls = {}
+	cmd2cls = {}   # command name -> command class
+	groups = {}    # group name -> list of command names
 
 	# Autodiscover commands; map all commands to their names, as returned by Command.add_parser
 	for cls in dir(command):
 		cls = getattr(command, cls)
 		if inspect.isclass(cls) and issubclass(cls, command.Command):
 			name = cls.add_parser(parent_parser, subparser)
-			if name:
-				cmd2cls[name] = cls
+			if not name:
+				continue
+			cmd2cls[name] = cls
+			g_name = cls.get_cmd_group_name()
+			if g_name not in groups:
+				groups[g_name] = []
+			groups[g_name].append(name)
+
+	general_epilog = "Commands by group:\n"
+	for g_name in sorted(groups.keys()):
+		general_epilog += '\n  %s:\n' % g_name
+		general_epilog += ''.join("    - %s\n" % cmd for cmd in groups[g_name])
+	general_epilog += "\nFor more information on a command run `%(prog)s <command> --help`,\neg. `%(prog)s info --help`\n" % {"prog": parser.prog}
+	parser.epilog = general_epilog
 
 	args = parser.parse_args()
 
