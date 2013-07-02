@@ -53,20 +53,32 @@ def print_instance(i):
 	if i.gross_cost_per_hour:
 		print "  cost per hour: %.5f PLN/h" % i.gross_cost_per_hour
 
-def print_http_balancer(w):
+def print_load_balancer(w):
 	"""
-	Helper for printing HTTPBalancer details.
+	Helper for printing LoadBalancer details.
 	"""
 
-	print "%s (%s) %s" % (w.name, w.uuid, "enabled" if w.enabled else "disabled")
-	print "  address:", w.address
+	print "%s (%s) %s" % (w.name, w.uuid, w.status)
+	print "  input: %s on %s:%d" % (w.type, w.address, w.listen_port)
 
-	if not w.domains:
-		print "  no domains"
-	else:
-		print "  domains:"
-		for d in w.domains:
-			print "    %s" % d
+	if w.type == 'HTTP':
+		if not w.domains:
+			print "  no domains"
+		else:
+			print "  domains:"
+			for d in w.domains:
+				print "    %s" % d
+
+	if w.monitor:
+		print "  health monitor:",
+		m = w.monitor
+		if m.check_type == 'tcp':
+			print "tcp-connection, interval %0.3f sec, timeout %0.3f sec" % (m.interval_ms/1000.0, m.timeout_ms/1000.0)
+		elif m.check_type == 'http':
+			print "http-request, interval %0.3f sec, timeout %0.3f sec, request \"%s %s\", expected %s" % \
+					(m.interval_ms, m.timeout_ms, m.http_method, m.http_path, ",".join(m.http_expect_alive))
+		else:
+			print "unknown"
 
 	if not w.backends:
 		print "  no backends"

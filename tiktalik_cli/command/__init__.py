@@ -22,5 +22,5 @@ from .image import *
 from .network import *
 from .auth import *
 from .command import *
-from .httpbalancer import *
+from .loadbalancer import *
 

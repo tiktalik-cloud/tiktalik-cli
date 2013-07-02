@@ -19,10 +19,10 @@
 
 import sys
 
-from tiktalik.loadbalancer.http import *
+from tiktalik.loadbalancer import *
 from tiktalik.error import TiktalikAPIError
 
-from .command import HTTPBalancerCommand, CommandError
+from .command import LoadBalancerCommand, CommandError
 from . import util
 
 def validate_backend(ip, port, weight):
@@ -42,42 +42,48 @@ def validate_backend(ip, port, weight):
 		if ip.count(".") != 3:
 			raise ValueError()
 
-class ListHTTPBalancers(HTTPBalancerCommand):
+class ListLoadBalancers(LoadBalancerCommand):
 	@classmethod
 	def add_parser(cls, parser, subparser):
-		p = subparser.add_parser("list-http-balancers", description="List HTTP Balancers", parents=[parser])
+		p = subparser.add_parser("list-load-balancers", description="List Load Balancers", parents=[parser])
 		p.add_argument("-v", action="store_true", dest="verbose", help="Verbose output")
 
-		return "list-http-balancers"
+		return "list-load-balancers"
 
 	def execute(self):
-		balancers = HTTPBalancer.list_all(self.conn, history=self.args.verbose)
+		balancers = LoadBalancer.list_all(self.conn, history=self.args.verbose)
 		if not self.args.verbose:
 			self._print_short(balancers)
 		else:
-			map(util.print_http_balancer, balancers)
+			map(util.print_load_balancer, balancers)
 	
 	def _print_short(self, balancers):
 		for b in balancers:
-			print "%s  %s (%s) domains: %s, backends: %s" % (b.name, b.uuid, "enabled" if b.enabled else "disabled",
-				", ".join(b.domains) if b.domains else "none",
+			print "%s  %s (%s) %s at %s:%d, backends: %s" % (b.name, b.uuid, b.status,
+				b.type, "..." + b.address[b.address.rfind('-'):], b.listen_port,
 				", ".join("%s:%i (w=%i)" % (i.ip, i.port, i.weight) for i in b.backends) if b.backends else "none")
 
-class CreateHTTPBalancer(HTTPBalancerCommand):
+class CreateLoadBalancer(LoadBalancerCommand):
 	@classmethod
 	def add_parser(cls, parser, subparser):
-		p = subparser.add_parser("create-http-balancer", description="Create a new HTTP Balancer", parents=[parser])
-		p.add_argument("name", help="Name assigned to this HTTP Balancer.")
-		p.add_argument("-d", dest="domains", metavar="DOMAIN", action="append", default=[],
-			help="Add domains to the HTTP Balancer configuration.")
+		p = subparser.add_parser("create-load-balancer", description="Create a new Load Balancer", parents=[parser])
+		p.add_argument("name", help="Name assigned to this Load Balancer.")
+		p.add_argument("proto", help='Type of Load Balancer, one of "TCP", "HTTP" or "HTTPS".')
+		p.add_argument("-a", dest="address", metavar="ADDRESS", action="store", default=None,
+			help="Optional entry point to use, if not set then new entry point will be created.")
+		p.add_argument("-p", dest="port", metavar="PORT", action="store", type=int, default=None,
+			help="Listen port, only for TCP proto balancing.")
 		p.add_argument("-b", dest="backends", metavar="BACKEND", action="append", default=[],
-			help="Add backends to the HTTP Balancer configuration. Pass backends using this format: IP:PORT:WEIGHT")
+			help="Add backends to the Load Balancer configuration. Pass backends using this format: IP:PORT:WEIGHT")
+		p.add_argument("-d", dest="domains", metavar="DOMAIN", action="append", default=[],
+			help="Add domains to the HTTP proto Load Balancer.")
 
-		return "create-http-balancer"
+		return "create-load-balancer"
 
 	def execute(self):
 		name = self.args.name.decode(sys.stdin.encoding)
 		backends = []
+
 		# Roughly validate input
 		for b in self.args.backends:
 			try:
@@ -86,96 +92,111 @@ class CreateHTTPBalancer(HTTPBalancerCommand):
 				backends.append((ip, int(port), int(weight)))
 			except ValueError:
 				raise CommandError("Invalid backend specified. Please use the IP:PORT:WEIGHT format")
+		if not backends:
+			raise CommandError("Need at least one backend specified")
+		if self.args.proto not in ['TCP', 'HTTP', 'HTTPS']:
+			raise CommandError("Invalid balancer type")
 
-		balancer = HTTPBalancer.create(self.conn, name,
-			[d.decode(sys.stdin.encoding) for d in self.args.domains], backends)
-		util.print_http_balancer(balancer)
+		# still developing
+		if self.args.proto == 'HTTPS':
+			raise CommandError("HTTPS Balancer not supported yet")
+
+		kwargs = {'backends': backends}
+		if self.args.address:
+			kwargs['address'] = self.args.address
+		if self.args.port:
+			kwargs['port'] = self.args.port
+		if self.args.domains:
+			kwargs['domains'] = [d.decode(sys.stdin.encoding) for d in self.args.domains]
+
+		balancer = LoadBalancer.create(self.conn, name, self.args.proto, **kwargs)
+		util.print_load_balancer(balancer)
 
 
-class HTTPBalancerCommand(HTTPBalancerCommand):
+class LoadBalancerCommand(LoadBalancerCommand):
 	@classmethod
 	def add_common_arguments(cls, parser):
-		parser.add_argument("name", help="HTTPBalancer name.")
+		parser.add_argument("name", help="Load Balancer name.")
 
 	def _wb_by_name(self, name, history=False):
-		L = filter(lambda x: x.name == name, HTTPBalancer.list_all(self.conn, history=history))
+		L = filter(lambda x: x.name == name, LoadBalancer.list_all(self.conn, history=history))
 		if len(L) == 1:
 			return L[0]
 		elif len(L) == 0:
-			raise CommandError("HTTPBalancer %s not found" % name)
+			raise CommandError("Load Balancer %s not found" % name)
 		else:
 			raise CommandError("More than one balancer named '%s' found, what do?!")
 
 
-class ViewHTTPBalancer(HTTPBalancerCommand):
+class ViewLoadBalancer(LoadBalancerCommand):
 	@classmethod
 	def add_parser(cls, parser, subparser):
-		p = subparser.add_parser("view-http-balancer", description="View HTTPBalancer information", parents=[parser])
-		HTTPBalancerCommand.add_common_arguments(p)
-		return "view-http-balancer"
+		p = subparser.add_parser("view-load-balancer", description="View Load Balancer information", parents=[parser])
+		LoadBalancerCommand.add_common_arguments(p)
+		return "view-load-balancer"
 
 	def execute(self):
 		balancer = self._wb_by_name(self.args.name, history=True)
-		util.print_http_balancer(balancer)
+		util.print_load_balancer(balancer)
 
 
-class RemoveHTTPBalancer(HTTPBalancerCommand):
+class RemoveLoadBalancer(LoadBalancerCommand):
 	@classmethod
 	def add_parser(cls, parser, subparser):
-		p = subparser.add_parser("rm-http-balancer", description="Remove a HTTPBalancer", parents=[parser])
-		HTTPBalancerCommand.add_common_arguments(p)
-		return "rm-http-balancer"
+		p = subparser.add_parser("rm-load-balancer", description="Remove a Load Balancer", parents=[parser])
+		LoadBalancerCommand.add_common_arguments(p)
+		return "rm-load-balancer"
 
 	def execute(self):
 		balancer = self._wb_by_name(self.args.name)
 		balancer.delete()
 
 
-class DisableHTTPBalancer(HTTPBalancerCommand):
+class DisableLoadBalancer(LoadBalancerCommand):
 	@classmethod
 	def add_parser(cls, parser, subparser):
-		p = subparser.add_parser("disable-http-balancer", description="Temporarily disable a HTTP Balancer", parents=[parser])
-		HTTPBalancerCommand.add_common_arguments(p)
+		p = subparser.add_parser("disable-load-balancer", description="Temporarily disable a Load Balancer", parents=[parser])
+		LoadBalancerCommand.add_common_arguments(p)
 		
-		return "disable-http-balancer"
+		return "disable-load-balancer"
 
 	def execute(self):
 		self._wb_by_name(self.args.name).disable()
 
 
-class EnableHTTPBalancer(HTTPBalancerCommand):
+class EnableLoadBalancer(LoadBalancerCommand):
 	@classmethod
 	def add_parser(cls, parser, subparser):
-		p = subparser.add_parser("enable-http-balancer", description="Enable a HTTPBalancer", parents=[parser])
-		HTTPBalancerCommand.add_common_arguments(p)
+		p = subparser.add_parser("enable-load-balancer", description="Enable a Load Balancer", parents=[parser])
+		LoadBalancerCommand.add_common_arguments(p)
 		
-		return "enable-http-balancer"
+		return "enable-load-balancer"
 
 	def execute(self):
 		self._wb_by_name(self.args.name).enable()
 
 
-class RenameHTTPBalancer(HTTPBalancerCommand):
+class RenameLoadBalancer(LoadBalancerCommand):
 	@classmethod
 	def add_parser(cls, parser, subparser):
-		p = subparser.add_parser("rename-http-balancer", description="Enable a HTTPBalancer", parents=[parser])
-		HTTPBalancerCommand.add_common_arguments(p)
+		p = subparser.add_parser("rename-load-balancer", description="Enable a Load Balancer", parents=[parser])
+		LoadBalancerCommand.add_common_arguments(p)
 		p.add_argument("new_name", help="New name")
 		
-		return "rename-http-balancer"
+		return "rename-load-balancer"
 
 	def execute(self):
 		self._wb_by_name(self.args.name).rename(self.args.new_name)
 
 
-class RemoveHTTPBalancerDomain(HTTPBalancerCommand):
+class RemoveLoadBalancerDomain(LoadBalancerCommand):
 	@classmethod
 	def add_parser(cls, parser, subparser):
-		p = subparser.add_parser("rm-http-balancer-domain", description="Remove a domain from a HTTPBalancer's list", parents=[parser])
-		HTTPBalancerCommand.add_common_arguments(p)
+		p = subparser.add_parser("rm-load-balancer-domain", description="Remove a domain from a HTTP Balancer's domain list", parents=[parser])
+		LoadBalancerCommand.add_common_arguments(p)
 		p.add_argument("domain", help="Domain to remove")
 
-		return "rm-http-balancer-domain"
+		return "rm-load-balancer-domain"
 
 	def execute(self):
 		balancer = self._wb_by_name(self.args.name)
@@ -183,14 +204,14 @@ class RemoveHTTPBalancerDomain(HTTPBalancerCommand):
 		balancer.remove_domain(domain)
 
 
-class AddHTTPBalancerDomain(HTTPBalancerCommand):
+class AddLoadBalancerDomain(LoadBalancerCommand):
 	@classmethod
 	def add_parser(cls, parser, subparser):
-		p = subparser.add_parser("add-http-balancer-domain", description="Add a domain to a HTTPBalancer's list", parents=[parser])
-		HTTPBalancerCommand.add_common_arguments(p)
+		p = subparser.add_parser("add-load-balancer-domain", description="Add a domain to a HTTP Balancer's domain list", parents=[parser])
+		LoadBalancerCommand.add_common_arguments(p)
 		p.add_argument("domain", help="Domain to add")
 
-		return "add-http-balancer-domain"
+		return "add-load-balancer-domain"
 
 	def execute(self):
 		balancer = self._wb_by_name(self.args.name)
@@ -201,17 +222,17 @@ class AddHTTPBalancerDomain(HTTPBalancerCommand):
 		balancer.add_domain(self.args.domain)
 
 
-class AddHTTPBalancerBackend(HTTPBalancerCommand):
+class AddLoadBalancerBackend(LoadBalancerCommand):
 	@classmethod
 	def add_parser(cls, parser, subparser):
-		p = subparser.add_parser("add-http-balancer-backend", description="Add a backend to a HTTPBalancer's list", parents=[parser])
-		HTTPBalancerCommand.add_common_arguments(p)
+		p = subparser.add_parser("add-load-balancer-backend", description="Add a backend to a Load Balancer's backend list", parents=[parser])
+		LoadBalancerCommand.add_common_arguments(p)
 
 		p.add_argument("ip", help="Backend IP address")
 		p.add_argument("port", type=int, help="Backend port")
 		p.add_argument("weight", type=int, default=10, help="Backend's weight value")
 
-		return "add-http-balancer-backend"
+		return "add-load-balancer-backend"
 
 	def execute(self):
 		try:
@@ -223,14 +244,14 @@ class AddHTTPBalancerBackend(HTTPBalancerCommand):
 		balancer.add_backend(self.args.ip, self.args.port, self.args.weight)
 
 
-class RemoveHTTPBalancerBackend(HTTPBalancerCommand):
+class RemoveLoadBalancerBackend(LoadBalancerCommand):
 	@classmethod
 	def add_parser(cls, parser, subparser):
-		p = subparser.add_parser("rm-http-balancer-backend", description="Remove a backend from a HTTPBalancer's list", parents=[parser])
-		HTTPBalancerCommand.add_common_arguments(p)
+		p = subparser.add_parser("rm-load-balancer-backend", description="Remove a backend from a Load Balancer's backend list", parents=[parser])
+		LoadBalancerCommand.add_common_arguments(p)
 		p.add_argument("uuid", help="Backend UUID")
 
-		return "rm-http-balancer-backend"
+		return "rm-load-balancer-backend"
 
 	def execute(self):
 		balancer = self._wb_by_name(self.args.name)
@@ -238,17 +259,17 @@ class RemoveHTTPBalancerBackend(HTTPBalancerCommand):
 			raise CommandError("No such backend")
 		balancer.remove_backend(self.args.uuid)
 
-class ModifyHTTPBalancerBackend(HTTPBalancerCommand):
+class ModifyLoadBalancerBackend(LoadBalancerCommand):
 	@classmethod
 	def add_parser(cls, parser, subparser):
-		p = subparser.add_parser("modify-http-balancer-backend", description="Modify a HTTPBalancer's backend", parents=[parser])
-		HTTPBalancerCommand.add_common_arguments(p)
+		p = subparser.add_parser("modify-load-balancer-backend", description="Modify a Load Balancer's backend", parents=[parser])
+		LoadBalancerCommand.add_common_arguments(p)
 		p.add_argument("uuid", help="Backend UUID")
 		p.add_argument("-i", dest="ip", help="Change the IP address")
 		p.add_argument("-p", dest="port", type=int, help="Change the port")
 		p.add_argument("-w", dest="weight", type=int, help="Change the weight value")
 
-		return "modify-http-balancer-backend"
+		return "modify-load-balancer-backend"
 
 	def execute(self):
 		if not self.args.ip and not self.args.port and not self.args.weight:
