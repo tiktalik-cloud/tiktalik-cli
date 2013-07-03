@@ -18,7 +18,7 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 from tiktalik.computing import ComputingConnection
-from tiktalik.loadbalancer import HTTPBalancerConnection
+from tiktalik.loadbalancer import LoadBalancerConnection
 from .. import auth
 
 class CommandError(Exception):
@@ -31,7 +31,7 @@ class Command(object):
 	def __init__(self, args, keyid, secret, connection_cls):
 		self.args = args
 		if connection_cls != None:
-			self.conn = connection_cls(keyid, secret)
+			self.conn = connection_cls(keyid, secret, host='babol.dev.ts', port=8019, use_ssl=False)
 
 	@classmethod
 	def add_parser(cls, parser, subparser):
@@ -82,10 +82,10 @@ class ComputingNetworkCommand(ComputingCommand):
 	def get_cmd_group_name(cls):
 		return "Computing network commands"
 
-class HTTPBalancerCommand(Command):
+class LoadBalancerCommand(Command):
 	def __init__(self, args, keyid, secret):
-		super(HTTPBalancerCommand, self).__init__(args, keyid, secret, HTTPBalancerConnection)
+		super(LoadBalancerCommand, self).__init__(args, keyid, secret, LoadBalancerConnection)
 
 	@classmethod
 	def get_cmd_group_name(cls):
-		return "HTTP balancer commands"
+		return "Load balancer commands"
