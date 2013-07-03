@@ -31,7 +31,7 @@ class Command(object):
 	def __init__(self, args, keyid, secret, connection_cls):
 		self.args = args
 		if connection_cls != None:
-			self.conn = connection_cls(keyid, secret, host='babol.dev.ts', port=8019, use_ssl=False)
+			self.conn = connection_cls(keyid, secret)
 
 	@classmethod
 	def add_parser(cls, parser, subparser):
