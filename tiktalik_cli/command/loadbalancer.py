@@ -60,7 +60,7 @@ class ListLoadBalancers(LoadBalancerCommand):
 	def _print_short(self, balancers):
 		for b in balancers:
 			print "%s  %s (%s) %s at %s:%d, backends: %s" % (b.name, b.uuid, b.status,
-				b.type, "..." + b.address[b.address.rfind('-'):], b.listen_port,
+				b.type, "..." + b.address[b.address.rfind('-'):], b.port,
 				", ".join("%s:%i (w=%i)" % (i.ip, i.port, i.weight) for i in b.backends) if b.backends else "none")
 
 class CreateLoadBalancer(LoadBalancerCommand):

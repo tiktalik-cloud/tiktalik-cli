@@ -59,7 +59,7 @@ def print_load_balancer(w):
 	"""
 
 	print "%s (%s) %s" % (w.name, w.uuid, w.status)
-	print "  input: %s on %s:%d" % (w.type, w.address, w.listen_port)
+	print "  input: %s on %s:%d" % (w.type, w.address, w.port)
 
 	if w.type == 'HTTP':
 		if not w.domains:
