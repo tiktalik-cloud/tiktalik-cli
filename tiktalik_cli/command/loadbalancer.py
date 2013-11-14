@@ -31,16 +31,16 @@ def validate_backend(ip, port, weight):
 	if port is not None:
 		port = int(port)
 		if port <= 0 or port >= 65536:
-			raise ValueError()
+			raise ValueError("Port number must be between 1-65535")
 
 	if weight is not None:
 		if int(weight) <= 0:
-			raise ValueError()
+			raise ValueError("Weight must be positive")
 
 	if ip is not None:
 		socket.inet_aton(ip)
 		if ip.count(".") != 3:
-			raise ValueError()
+			raise ValueError("Invalid IPv4 address")
 
 class ListLoadBalancers(LoadBalancerCommand):
 	@classmethod
@@ -88,10 +88,13 @@ class CreateLoadBalancer(LoadBalancerCommand):
 		for b in self.args.backends:
 			try:
 				ip, port, weight = b.split(":")
+			except:
+				raise CommandError("Invalid backend specified. Please use the IP:PORT:WEIGHT format")
+			try:
 				validate_backend(ip, port, weight)
 				backends.append((ip, int(port), int(weight)))
-			except ValueError:
-				raise CommandError("Invalid backend specified. Please use the IP:PORT:WEIGHT format")
+			except ValueError as e:
+				raise CommandError("Invalid backend specified." + {'':''}.get(e.message, " " + e.message))
 		if not backends:
 			raise CommandError("Need at least one backend specified")
 		if self.args.proto not in ['TCP', 'HTTP', 'HTTPS']:
@@ -237,8 +240,8 @@ class AddLoadBalancerBackend(LoadBalancerCommand):
 	def execute(self):
 		try:
 			validate_backend(self.args.ip, self.args.port, self.args.weight)
-		except ValueError:
-			raise CommandError("Invalid backend parameters specified")
+		except ValueError as e:
+			raise CommandError("Invalid backend specified." + {'':''}.get(e.message, " " + e.message))
 
 		balancer = self._wb_by_name(self.args.name)
 		balancer.add_backend(self.args.ip, self.args.port, self.args.weight)
@@ -285,7 +288,7 @@ class ModifyLoadBalancerBackend(LoadBalancerCommand):
 		try:
 			validate_backend(self.args.ip, self.args.port, self.args.weight)
 		except ValueError as e:
-			raise CommandError("Invalid parameters")
+			raise CommandError("Invalid parameters" + {'':''}.get(e.message, ". " + e.message))
 
 		balancer.modify_backend(self.args.uuid, ip=self.args.ip, port=self.args.port, weight=self.args.weight)
 
