@@ -34,8 +34,8 @@ def validate_backend(ip, port, weight):
 			raise ValueError("Port number must be between 1-65535")
 
 	if weight is not None:
-		if int(weight) <= 0:
-			raise ValueError("Weight must be positive")
+		if int(weight) < 0:
+			raise ValueError("Weight must be positive or zero to suspend.")
 
 	if ip is not None:
 		socket.inet_aton(ip)
@@ -275,7 +275,7 @@ class ModifyLoadBalancerBackend(LoadBalancerCommand):
 		return "modify-load-balancer-backend"
 
 	def execute(self):
-		if not self.args.ip and not self.args.port and not self.args.weight:
+		if not self.args.ip and not self.args.port and self.args.weight == None:
 			raise CommandError("Nothing to do. Please supply parameters that you want to modify.")
 
 		balancer = self._wb_by_name(self.args.name)
