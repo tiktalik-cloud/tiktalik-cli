@@ -35,6 +35,10 @@ def print_instance(i):
 
 	print "%s (%s) - %s" % (i.hostname, i.uuid, "Running" if i.running else "Not running")
 
+	if i.block_devices:
+		for b in i.block_devices:
+			print "  block device %d: %s GB" % (b.seq, b.size)
+
 	if not i.interfaces:
 		print "  no network interfaces"
 	else:

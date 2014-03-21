@@ -57,11 +57,13 @@ class CreateInstance(ComputingCommand):
 	def add_parser(cls, parent, subparser):
 		p = subparser.add_parser("create-instance", description="Create a new instance.", parents=[parent])
 		p.add_argument("image_uuid", help="UUID of a VPS Image that should be used.")
-		p.add_argument("size", help='Instance size (in units). Allowed values: 0.25, 0.5, 1 - 15, "cpuhog", "cpuhog4".')
+		p.add_argument("size", help='Instance size (in units). Allowed values: 0.25, 0.5, 1 - 15, "cpuhog", "cpuhog4", "1s", "2s", "4s".')
 		p.add_argument("hostname", help="Hostname set at installation time.")
 		p.add_argument("-n", dest="networks", metavar="NETWORK_NAME", action="append",
 			help="Attach these networks to the new instance. Use the list-networks command to list available networks.")
 		p.add_argument("-b", dest="batch_mode", action="store_true", help="Batch mode. Don't confirm the operation.")
+		p.add_argument("-d", dest="disk_size_gb", action="store", type=int,
+			help="For standard instances must set disk size in GB.")
 
 		return "create-instance"
 
@@ -91,6 +93,13 @@ class CreateInstance(ComputingCommand):
 
 		size = self._parse_instance_size(self.args.size)
 
+		# For standard instances - must be set disk_size param
+		disk_size_mb = None
+		if size.endswith("s"):
+			if not self.args.disk_size_gb:
+				raise CommandError("Disk size not set, see -d param.")
+			disk_size_mb = self.args.disk_size_gb * 1000  # no, no, not 1024, it's not a mistake
+
 		if not self.args.batch_mode:
 			self.yesno(
 				"Creating new instance with these parameters:\n"
@@ -98,18 +107,18 @@ class CreateInstance(ComputingCommand):
 				"Is this OK?" % (self.args.image_uuid, size, self.args.hostname,
 					", ".join(self.args.networks)))
 
-		response = self.conn.create_instance(self.args.hostname, size, self.args.image_uuid, networks)
+		response = self.conn.create_instance(self.args.hostname, size, self.args.image_uuid, networks, disk_size_mb=disk_size_mb)
 
 		print "Instance", self.args.hostname, "is now being installed."
 
 	def _parse_instance_size(self, sz):
 		"""
 		Parse instance size passed as string and validate it.
-		Valid values are: 0.25, 0.5, integers 1-15, "cpuhog", "cpuhog4"
+		Valid values are: 0.25, 0.5, integers 1-15, "cpuhog", "cpuhog4", "1s", "2s", "4s".
 		Raise CommandError if `sz` is not a valid size.
 		"""
 
-		if sz in ("cpuhog", "cpuhog4"):
+		if sz in ("cpuhog", "cpuhog4", "1s", "2s", "4s"):
 			return sz
 
 		try:
@@ -245,6 +254,7 @@ class InstanceInfo(InstanceCommand):
 
 	def execute(self):
 		instance = self._instance_from_args(actions=True, vpsimage=True, cost=True)
+		instance.load_block_devices()
 		util.print_instance(instance)
 
 

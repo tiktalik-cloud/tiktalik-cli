@@ -21,5 +21,5 @@ setup(
 			]
 		},
 
-	install_requires=["tiktalik>=1.3"]
+	install_requires=["tiktalik>=1.4"]
 )
