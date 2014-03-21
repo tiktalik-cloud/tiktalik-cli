@@ -220,6 +220,22 @@ class BackupInstance(InstanceCommand):
 		print "Instance %s (%s) is now being backed up" % (instance.hostname, instance.uuid)
 
 
+class DeleteInstance(InstanceCommand):
+	@classmethod
+	def add_parser(cls, parent, subparser):
+		p = subparser.add_parser("delete-instance",
+				description="Permanently remove an instance. Either name or UUID must be specified.", 
+				parents=[parent])
+		InstanceCommand.add_common_arguments(p)
+		return "delete-instance"
+
+	def execute(self):
+		instance = self._instance_from_args()
+		
+		self.conn.delete_instance(instance.uuid)
+		print "Instance %s (%s) is now being removed" % (instance.hostname, instance.uuid)
+
+
 class InstanceInfo(InstanceCommand):
 	@classmethod
 	def add_parser(cls, parent, subparser):
