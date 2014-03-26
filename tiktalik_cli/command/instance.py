@@ -62,8 +62,8 @@ class CreateInstance(ComputingCommand):
 		p.add_argument("-n", dest="networks", metavar="NETWORK_NAME", action="append",
 			help="Attach these networks to the new instance. Use the list-networks command to list available networks.")
 		p.add_argument("-b", dest="batch_mode", action="store_true", help="Batch mode. Don't confirm the operation.")
-		p.add_argument("-d", dest="disk_size_gb", action="store", type=int,
-			help="For standard instances must set disk size in GB.")
+		p.add_argument("-d", dest="disk_size_mb", action="store", type=int,
+			help="For standard instances must set disk size in MB.")
 
 		return "create-instance"
 
@@ -96,9 +96,9 @@ class CreateInstance(ComputingCommand):
 		# For standard instances - must be set disk_size param
 		disk_size_mb = None
 		if size.endswith("s"):
-			if not self.args.disk_size_gb:
+			if not self.args.disk_size_mb:
 				raise CommandError("Disk size not set, see -d param.")
-			disk_size_mb = self.args.disk_size_gb * 1000  # no, no, not 1024, it's not a mistake
+			disk_size_mb = self.args.disk_size_mb
 
 		if not self.args.batch_mode:
 			self.yesno(
