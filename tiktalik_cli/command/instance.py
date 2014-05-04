@@ -136,7 +136,7 @@ class CreateInstance(ComputingCommand):
 		if sz is None:
 			raise CommandError('Size must be 0.25, 0.5, integral value 1-15 or "cpuhog".')
 
-		return sz
+		return str(sz)
 
 
 class InstanceCommand(ComputingCommand):
