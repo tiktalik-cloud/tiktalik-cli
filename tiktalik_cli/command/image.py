@@ -30,7 +30,10 @@ class ListImages(ComputingImageCommand):
 	def execute(self):
 		images = self.conn.list_images()
 		for i in images:
-			print '%s "%s", type=%s %s' % (i.uuid, i.name, i.type, "(private)" if not i.is_public else "")
+			desc = '%s "%s" type=%s' % (i.uuid, i.name, i.type)
+			if not i.is_public:
+				desc += ", private, %s" % i.create_time
+			print desc
 
 
 class DeleteImage(ComputingImageCommand):
