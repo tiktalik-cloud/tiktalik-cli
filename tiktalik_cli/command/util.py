@@ -25,7 +25,7 @@ def print_action(a):
 	if a.end_time:
 		s += " ended at %s" % a.end_time
 	else:
-		s = "(In progress) " + s
+		s = "(In progress: %s%%) %s" % (a.progress, s)
 	print "     " + s
 
 def print_instance(i):
