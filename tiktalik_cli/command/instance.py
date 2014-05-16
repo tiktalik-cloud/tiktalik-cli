@@ -48,7 +48,7 @@ class ListInstances(ComputingCommand):
 			map(util.print_instance, instances)
 
 	def _print_short(self, instances):
-		for instance in instances:
+		for instance in sorted(instances, key = lambda x: x.hostname):
 			print "%s  %s %s" % (instance.hostname, instance.uuid, "Running" if instance.running else "Not running")
 
 
