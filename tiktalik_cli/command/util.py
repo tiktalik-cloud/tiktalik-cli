@@ -21,21 +21,21 @@ def print_iface(n):
 	print "    eth%i addr: %s mac: %s network: %s" % (n.seq, n.ip, n.mac, n.network.name)
 
 def print_action(a):
-	s = "%s started at %s" % (a.description, a.start_time)
+	s = "%s, started at %s" % (a.description, a.start_time)
 	if a.end_time:
-		s += " ended at %s" % a.end_time
+		s += ", ended at %s" % a.end_time
 	else:
 		s = "(In progress: %s%%) %s" % (a.progress, s)
 	print "     " + s
 
-def print_instance(i):
+def print_instance(i, verbose=False):
 	"""
 	Helper for printing instance details.
 	"""
 
 	print "%s (%s) - %s" % (i.hostname, i.uuid, "Running" if i.running else "Not running")
 
-	if i.block_devices:
+	if verbose and i.block_devices:
 		for b in i.block_devices:
 			print "  block device %d: %d MB (%.1f GB)" % \
 			      (b.seq, b.size, b.size / 1000.0) # div by 1000, not 1024
@@ -48,14 +48,14 @@ def print_instance(i):
 
 	print "  default password: %s" % i.default_password
 
-	if i.vpsimage:
+	if verbose and i.vpsimage:
 		print "  running image %s (%s)" % (i.vpsimage.name, i.vpsimage.uuid)
 
-	if i.actions:
+	if verbose and i.actions:
 		print "  recent operations:"
 		map(print_action, i.actions)
 	
-	if i.gross_cost_per_hour:
+	if verbose and i.gross_cost_per_hour:
 		print "  cost per hour: %.5f PLN/h" % i.gross_cost_per_hour
 
 def print_load_balancer(w):

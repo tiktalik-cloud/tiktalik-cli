@@ -158,7 +158,7 @@ class InstanceCommand(ComputingCommand):
 		if self.args.hostname and self.args.uuid:
 			raise CommandError("Both hostname and UUID can't be specified. Decide on one!")
 		if not self.args.hostname and not self.args.uuid and not self.args.instance:
-			raise CommandError("Either `instance' argument, or hostname (-n) or UUID (-u) must be provided.")
+			raise CommandError("Either `instance' argument, hostname (-n) or UUID (-u) must be provided.")
 
 		try:
 			# select by hostname/uuid prefix
@@ -276,13 +276,18 @@ class InstanceInfo(InstanceCommand):
 	@classmethod
 	def add_parser(cls, parent, subparser):
 		p = subparser.add_parser("info", description="Display instance information.", parents=[parent])
+		p.add_argument("-a", "--all", dest="verbose", action="store_true",
+			help="Print all extra information.")
 		InstanceCommand.add_common_arguments(p)
 		return "info"
 
 	def execute(self):
-		instance = self._instance_from_args(actions=True, vpsimage=True, cost=True)
-		instance.load_block_devices()
-		util.print_instance(instance)
+		if not self.args.verbose:
+			instance = self._instance_from_args()
+		else:
+			instance = self._instance_from_args(actions=True, vpsimage=True, cost=True)
+			instance.load_block_devices()
+		util.print_instance(instance, self.args.verbose)
 
 
 class AddInterface(InstanceCommand):
