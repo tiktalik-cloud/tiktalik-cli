@@ -49,7 +49,7 @@ class ListInstances(ComputingCommand):
 
 	def _print_short(self, instances):
 		for instance in sorted(instances, key = lambda x: x.hostname):
-			print "%s  %s %s" % (instance.hostname, instance.uuid, "Running" if instance.running else "Not running")
+			print "%s (%s) %s" % (instance.hostname, instance.uuid, "Running" if instance.running else "Not running")
 
 
 class CreateInstance(ComputingCommand):
@@ -146,17 +146,41 @@ class InstanceCommand(ComputingCommand):
 
 	@classmethod
 	def add_common_arguments(cls, parser):
-		parser.add_argument("-n", dest="hostname", help="Instance hostname. Use -u if it is not unique.")
-		parser.add_argument("-u", dest="uuid", help="Instance UUID, can be specified instead of name.")
+		group = parser.add_mutually_exclusive_group()
+		group.add_argument("instance", nargs='?', default='',
+				help="Instance hostname prefix, or instance UUID prefix.")
+		group.add_argument("-n", dest="hostname",
+				help="Instance full hostname. Use -u or `instance' argument if the hostname is not unique.")
+		group.add_argument("-u", dest="uuid",
+				help="Instance full UUID. Can be specified instead of name (-n) or `instance' argument.")
 
 	def _instance_from_args(self, actions=False, vpsimage=False, cost=False):
 		if self.args.hostname and self.args.uuid:
 			raise CommandError("Both hostname and UUID can't be specified. Decide on one!")
-		if not self.args.hostname and not self.args.uuid:
-			raise CommandError("Either hostname or UUID must be provided.")
+		if not self.args.hostname and not self.args.uuid and not self.args.instance:
+			raise CommandError("Either `instance' argument, or hostname (-n) or UUID (-u) must be provided.")
 
 		try:
-			if self.args.hostname:
+			# select by hostname/uuid prefix
+			if self.args.instance:
+				instances = []
+				for i in Instance.list_all(self.conn):
+					if i.hostname.startswith(self.args.instance):
+						instances.append(i)
+					elif i.uuid.startswith(self.args.instance):
+						instances.append(i)
+				if not instances:
+					raise CommandError("There is no such instance.")
+				if len(instances) > 1:
+					print "Matched more than one instance:"
+					for i in instances:
+						print " - %s (%s)" % (i.hostname, i.uuid)
+					raise CommandError("Select exactly one instance.")
+
+				instance = Instance.get_by_uuid(self.conn, instances[0].uuid,
+						actions, vpsimage, cost)
+			# select by full hostname only:
+			elif self.args.hostname:
 				instances = Instance.get_by_hostname(self.conn, self.args.hostname,
 						actions, vpsimage, cost)
 				if len(instances) > 1:
@@ -165,6 +189,7 @@ class InstanceCommand(ComputingCommand):
 							% (len(instances), self.args.hostname, msg))
 
 				instance = instances[0]
+			# select by full uuid only:
 			else:
 				instance = Instance.get_by_uuid(self.conn, self.args.uuid,
 						actions, vpsimage, cost)
