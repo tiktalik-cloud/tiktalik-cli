@@ -193,10 +193,12 @@ class StartInstance(InstanceCommand):
 class StopInstance(InstanceCommand):
 	@classmethod
 	def add_parser(cls, parent, subparser):
-		p = subparser.add_parser("stop", description="Stop an instance. Either name or UUID must be specified.", 
+		p = subparser.add_parser("stop",
+				description="Stop an instance. Send ACPI Shutdown signal (default), or stop forcefully (see -f argument)",
 				parents=[parent])
 		InstanceCommand.add_common_arguments(p)
-		p.add_argument("-f", dest="force", action="store_true", help="Stop the instance forcefuly.")
+		p.add_argument("-f", dest="force", action="store_true",
+				help="Stop the instance forcefully. Do not send gently ACPI Shutdown signal, instead cut the power off.")
 
 		return "stop"
 
