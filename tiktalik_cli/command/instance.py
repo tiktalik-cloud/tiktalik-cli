@@ -41,15 +41,12 @@ class ListInstances(ComputingCommand):
 	def execute(self):
 		instances = Instance.list_all(self.conn, actions=self.args.actions,
 				cost=self.args.cost, vpsimage=self.args.vpsimage)
-		# instances = self.conn.list_instances(actions=self.args.actions, cost=self.args.cost, vpsimage=self.args.vpsimage)
-		if not self.args.verbose:
-			self._print_short(instances)
-		else:
-			map(util.print_instance, instances)
-
-	def _print_short(self, instances):
 		for instance in sorted(instances, key = lambda x: x.hostname):
-			print "%s (%s) %s" % (instance.hostname, instance.uuid, "Running" if instance.running else "Not running")
+			if not self.args.verbose:
+				print "%s (%s) - %s" % (instance.hostname, instance.uuid, "Running" if instance.running else "Not running")
+			else:
+				util.print_instance(instance, verbose=bool(self.args.verbose))
+
 
 
 class CreateInstance(ComputingCommand):
