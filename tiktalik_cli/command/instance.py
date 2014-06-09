@@ -59,8 +59,8 @@ class CreateInstance(ComputingCommand):
 		p.add_argument("-n", dest="networks", metavar="NETWORK_NAME", action="append",
 			help="Attach these networks to the new instance. Use the list-networks command to list available networks.")
 		p.add_argument("-b", dest="batch_mode", action="store_true", help="Batch mode. Don't confirm the operation.")
-		p.add_argument("-d", dest="disk_size_mb", action="store", type=int,
-			help="For standard instances must set disk size in MB.")
+		p.add_argument("-d", dest="disk_size_gb", action="store", type=int,
+			help="For standard instances must set disk size in GB.")
 
 		return "create-instance"
 
@@ -91,11 +91,11 @@ class CreateInstance(ComputingCommand):
 		size = self._parse_instance_size(self.args.size)
 
 		# For standard instances - must be set disk_size param
-		disk_size_mb = None
+		disk_size_gb = None
 		if size.endswith("s"):
-			if not self.args.disk_size_mb:
+			if not self.args.disk_size_gb:
 				raise CommandError("Disk size not set, see -d param.")
-			disk_size_mb = self.args.disk_size_mb
+			disk_size_gb = self.args.disk_size_gb
 
 		if not self.args.batch_mode:
 			self.yesno(
@@ -104,7 +104,8 @@ class CreateInstance(ComputingCommand):
 				"Is this OK?" % (self.args.image_uuid, size, self.args.hostname,
 					", ".join(self.args.networks)))
 
-		response = self.conn.create_instance(self.args.hostname, size, self.args.image_uuid, networks, disk_size_mb=disk_size_mb)
+		response = self.conn.create_instance(self.args.hostname, size, \
+						self.args.image_uuid, networks, disk_size_gb=disk_size_gb)
 
 		print "Instance", self.args.hostname, "is now being installed."
 
@@ -131,7 +132,7 @@ class CreateInstance(ComputingCommand):
 			sz = None
 
 		if sz is None:
-			raise CommandError('Size must be 0.25, 0.5, integral value 1-15 or "cpuhog".')
+			raise CommandError('Instance size must be one of 0.25, 0.5, integral value 1-15, "1s", "2s", "4s" or "cpuhog".')
 
 		return str(sz)
 

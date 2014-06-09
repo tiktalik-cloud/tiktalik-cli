@@ -37,8 +37,7 @@ def print_instance(i, verbose=False):
 
 	if verbose and i.block_devices:
 		for b in i.block_devices:
-			print "  block device %d: %d MB (%.1f GB)" % \
-			      (b.seq, b.size, b.size / 1000.0) # div by 1000, not 1024
+			print "  block device %d: %.1f GB" % (b.seq, b.size_gb)
 
 	if not i.interfaces:
 		print "  no network interfaces"
