@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
 	name="tiktalik-cli",
-	version="1.7.1",
+	version="1.8",
 	description="Tiktalik Computing command line interface",
 	author="Techstorage sp. z o.o.",
 	author_email="kontakt@tiktalik.com",
@@ -21,5 +21,5 @@ setup(
 			]
 		},
 
-	install_requires=["tiktalik>=1.4.3"]
+	install_requires=["tiktalik>=1.5"]
 )

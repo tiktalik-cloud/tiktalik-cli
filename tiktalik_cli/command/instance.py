@@ -302,3 +302,30 @@ class AddInterface(InstanceCommand):
 		instance = self._instance_from_args()
 		instance.add_interface(self.args.network_uuid, self.args.seq)
 
+
+class RemoveInterface(InstanceCommand):
+	@classmethod
+	def add_parser(cls, parent, subparser):
+		p = subparser.add_parser("remove-interface",
+				description="Removes network interface from an instance.",
+				parents=[parent])
+		p.add_argument("seq_or_ip", help="Interface name (eg \"eth1\") or IP address assign to interface to be removed.")
+		InstanceCommand.add_common_arguments(p)
+
+		return "remove-interface"
+
+	def execute(self):
+		instance = self._instance_from_args()
+		
+		seq_str = self.args.seq_or_ip.replace('eth', '')
+		iface_uuid = None
+		for iface in instance.interfaces:
+			if iface.ip == self.args.seq_or_ip or str(iface.seq) == seq_str:
+				iface_uuid = iface.uuid
+				break
+		if not iface_uuid:
+			raise CommandError("Cannot find interface by seq nor by IP address.")
+
+		instance.remove_interface(iface_uuid)
+
+
