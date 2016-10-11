@@ -243,14 +243,17 @@ class BackupInstance(InstanceCommand):
 		p = subparser.add_parser("backup", description="Backup an instance. Either name or UUID must be specified.", 
 				parents=[parent])
 		InstanceCommand.add_common_arguments(p)
+		p.add_argument("--set_name", type=str,  help="Set name of your backup", )
 		return "backup"
 
 	def execute(self):
 		instance = self._instance_from_args()
 		if instance.running:
 			raise CommandError("Instance is running. Please stop it before starting backup.")
-
-		instance.backup()
+                if self.args.set_name:
+		    instance.backup(self.args.set_name)
+                else:
+		    instance.backup()
 		print "Instance %s (%s) is now being backed up" % (instance.hostname, instance.uuid)
 
 
