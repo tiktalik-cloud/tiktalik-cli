@@ -43,7 +43,7 @@ class ListInstances(ComputingCommand):
 				cost=self.args.cost, vpsimage=self.args.vpsimage)
 		for instance in sorted(instances, key = lambda x: x.hostname):
 			if not self.args.verbose:
-				print "%s (%s) - %s" % (instance.hostname, instance.uuid, "Running" if instance.running else "Not running")
+				print(("%s (%s) - %s" % (instance.hostname, instance.uuid, "Running" if instance.running else "Not running")))
 			else:
 				util.print_instance(instance, verbose=bool(self.args.verbose))
 
@@ -107,7 +107,7 @@ class CreateInstance(ComputingCommand):
 		response = self.conn.create_instance(self.args.hostname, size, \
 						self.args.image_uuid, networks, disk_size_gb=disk_size_gb)
 
-		print "Instance", self.args.hostname, "is now being installed."
+		print(("Instance", self.args.hostname, "is now being installed."))
 
 	def _parse_instance_size(self, sz):
 		"""
@@ -170,9 +170,9 @@ class InstanceCommand(ComputingCommand):
 				if not instances:
 					raise CommandError("There is no such instance.")
 				if len(instances) > 1:
-					print "Matched more than one instance:"
+					print("Matched more than one instance:")
 					for i in instances:
-						print " - %s (%s)" % (i.hostname, i.uuid)
+						print((" - %s (%s)" % (i.hostname, i.uuid)))
 					raise CommandError("Select exactly one instance.")
 
 				instance = Instance.get_by_uuid(self.conn, instances[0].uuid,
@@ -210,7 +210,7 @@ class StartInstance(InstanceCommand):
 	def execute(self):
 		instance = self._instance_from_args()
 		instance.start()
-		print "Instance %s (%s) is now being started" % (instance.hostname, instance.uuid)
+		print(("Instance %s (%s) is now being started" % (instance.hostname, instance.uuid)))
 
 
 class StopInstance(InstanceCommand):
@@ -233,8 +233,8 @@ class StopInstance(InstanceCommand):
 		else:
 			instance.stop()
 
-		print "Instance %s (%s) is now being stopped%s" \
-			% (instance.hostname, instance.uuid, " forcefuly" if self.args.force else "")
+		print(("Instance %s (%s) is now being stopped%s" \
+			% (instance.hostname, instance.uuid, " forcefuly" if self.args.force else "")))
 
 
 class BackupInstance(InstanceCommand):
@@ -254,7 +254,7 @@ class BackupInstance(InstanceCommand):
 		    instance.backup(self.args.set_name)
                 else:
 		    instance.backup()
-		print "Instance %s (%s) is now being backed up" % (instance.hostname, instance.uuid)
+		print(("Instance %s (%s) is now being backed up" % (instance.hostname, instance.uuid)))
 
 
 class DeleteInstance(InstanceCommand):
@@ -270,7 +270,7 @@ class DeleteInstance(InstanceCommand):
 		instance = self._instance_from_args()
 		
 		self.conn.delete_instance(instance.uuid)
-		print "Instance %s (%s) is now being removed" % (instance.hostname, instance.uuid)
+		print(("Instance %s (%s) is now being removed" % (instance.hostname, instance.uuid)))
 
 
 class InstanceInfo(InstanceCommand):
