@@ -24,28 +24,24 @@ from .command import ComputingCommand, CommandError
 from . import util
 
 class ListInstances(ComputingCommand):
-	@classmethod
-	def add_parser(cls, parser, subparser):
-		p = subparser.add_parser("list", description="List instances", parents=[parser])
-		p.add_argument("-a", action="store_true", dest="actions",
-			help="Fetch recent actions for each instance")
-		p.add_argument("-c", action="store_true", dest="cost",
-			help="Fetch current hourly cost for each instance")
-		p.add_argument("-i", action="store_true", dest="vpsimage",
-			help="Fetch VPS Image details for each instance")
-		p.add_argument("-v", dest="verbose", action="store_true",
-			help="Print extra information (flags -a, -i, -t yield more details)")
+    @classmethod
+    def add_parser(cls, parser, subparser):
+        p = subparser.add_parser("list", description="List instances", parents=[parser])
+        p.add_argument("-a", action="store_true", dest="actions", help="Fetch recent actions for each instance")
+        p.add_argument("-c", action="store_true", dest="cost", help="Fetch current hourly cost for each instance")
+        p.add_argument("-i", action="store_true", dest="vpsimage", help="Fetch VPS Image details for each instance")
+        p.add_argument("-v", dest="verbose", action="store_true", help="Print extra information (flags -a, -i, -t yield more details)")
 
-		return "list"
+	return "list"
 
-	def execute(self):
-		instances = Instance.list_all(self.conn, actions=self.args.actions,
-				cost=self.args.cost, vpsimage=self.args.vpsimage)
-		for instance in sorted(instances, key = lambda x: x.hostname):
-			if not self.args.verbose:
-				print(("%s (%s) - %s" % (instance.hostname, instance.uuid, "Running" if instance.running else "Not running")))
-			else:
-				util.print_instance(instance, verbose=bool(self.args.verbose))
+    def execute(self):
+        instances = Instance.list_all(self.conn, actions=self.args.actions,
+            cost=self.args.cost, vpsimage=self.args.vpsimage)
+        for instance in sorted(instances, key = lambda x: x.hostname):
+            if not self.args.verbose:
+                print(("%s (%s) - %s" % (instance.hostname, instance.uuid, "Running" if instance.running else "Not running")))
+            else:
+                util.print_instance(instance, verbose=bool(self.args.verbose))
 
 
 
