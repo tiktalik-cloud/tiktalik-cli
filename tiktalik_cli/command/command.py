@@ -22,70 +22,70 @@ from tiktalik.loadbalancer import LoadBalancerConnection
 from .. import auth
 
 class CommandError(Exception):
-	pass
+    pass
 
 class CommandAborted(Exception):
-	pass
+    pass
 
 class Command(object):
-	def __init__(self, args, keyid, secret, connection_cls):
-		self.args = args
-		if connection_cls != None:
-			self.conn = connection_cls(keyid, secret)
+    def __init__(self, args, keyid, secret, connection_cls):
+        self.args = args
+        if connection_cls != None:
+            self.conn = connection_cls(keyid, secret)
 
-	@classmethod
-	def add_parser(cls, parser, subparser):
-		return None
+    @classmethod
+    def add_parser(cls, parser, subparser):
+        return None
 
-	@classmethod
-	def get_cmd_group_name(cls):
-		return "General commands"
+    @classmethod
+    def get_cmd_group_name(cls):
+        return "General commands"
 
-	def execute(self):
-		raise NotImplementedError()
+    def execute(self):
+        raise NotImplementedError()
 
-	def yesno(self, message, abort=True):
-		print message
+    def yesno(self, message, abort=True):
+        print message
 
-		answer = None
-		while answer not in ("yes", "no"):
-			answer = raw_input("Please answer 'yes' or 'no' > ")
+        answer = None
+        while answer not in ("yes", "no"):
+            answer = raw_input("Please answer 'yes' or 'no' > ")
 
-		if answer == "yes":
-			return True
+        if answer == "yes":
+            return True
 
-		if abort:
-			raise CommandAborted()
-		else:
-			return False
+        if abort:
+            raise CommandAborted()
+        else:
+            return False
 
 
 class GeneralCommand(Command):
-	def __init__(self, args, keyid, secret):
-		super(GeneralCommand, self).__init__(args, keyid, secret, None)
+    def __init__(self, args, keyid, secret):
+        super(GeneralCommand, self).__init__(args, keyid, secret, None)
 
 class ComputingCommand(Command):
-	def __init__(self, args, keyid, secret):
-		super(ComputingCommand, self).__init__(args, keyid, secret, ComputingConnection)
+    def __init__(self, args, keyid, secret):
+        super(ComputingCommand, self).__init__(args, keyid, secret, ComputingConnection)
 
-	@classmethod
-	def get_cmd_group_name(cls):
-		return "Computing commands"
+    @classmethod
+    def get_cmd_group_name(cls):
+        return "Computing commands"
 
 class ComputingImageCommand(ComputingCommand):
-	@classmethod
-	def get_cmd_group_name(cls):
-		return "Computing image commands"
+    @classmethod
+    def get_cmd_group_name(cls):
+        return "Computing image commands"
 
 class ComputingNetworkCommand(ComputingCommand):
-	@classmethod
-	def get_cmd_group_name(cls):
-		return "Computing network commands"
+    @classmethod
+    def get_cmd_group_name(cls):
+        return "Computing network commands"
 
 class LoadBalancerCommand(Command):
-	def __init__(self, args, keyid, secret):
-		super(LoadBalancerCommand, self).__init__(args, keyid, secret, LoadBalancerConnection)
+    def __init__(self, args, keyid, secret):
+        super(LoadBalancerCommand, self).__init__(args, keyid, secret, LoadBalancerConnection)
 
-	@classmethod
-	def get_cmd_group_name(cls):
-		return "Load balancer commands"
+    @classmethod
+    def get_cmd_group_name(cls):
+        return "Load balancer commands"
