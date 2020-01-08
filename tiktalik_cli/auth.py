@@ -25,10 +25,10 @@ import errno
 import configparser
 
 class AuthError(Exception):
-    pass
+    """AuthError class"""
 
 class SecurityError(Exception):
-    pass
+    """SecurityError class"""
 
 # $HOME/.tiktalik/auth
 CONFIG_DIR = os.path.expanduser("~/.tiktalik")
@@ -42,13 +42,15 @@ def get_credentials(args):
     # cmdline credentials override those stored in config file
     if args.api_key or args.api_secret:
         if not args.api_key or not args.api_secret:
-            raise AuthError("Both --key and --secret must be provided when passing auth tokens from commandline.")
+            raise AuthError(("Both --key and --secret must be provided "
+                             "when passing auth tokens from commandline."))
 
         return args.api_key, args.api_secret
 
     key, secret = read_from_file()
     if not key:
-        raise AuthError("Credentials not configured. Try `tiktalik init-auth`, or use --key and --secret.")
+        raise AuthError(("Credentials not configured. "
+                         "Try `tiktalik init-auth`, or use --key and --secret."))
 
     return key, secret.decode("base64")
 

@@ -14,13 +14,7 @@ setup(
         "Topic :: Utilities",
         "License :: OSI Approved :: MIT License",
     ],
-
     packages=["tiktalik_cli", "tiktalik_cli.command"],
-    entry_points={
-        "console_scripts": [
-            "tiktalik = tiktalik_cli.main:main"
-            ]
-    },
-
-    install_requires=["tiktalik>=1.5"]
+    entry_points={"console_scripts": ["tiktalik = tiktalik_cli.main:main"]},
+    install_requires=["tiktalik>=1.5"],
 )

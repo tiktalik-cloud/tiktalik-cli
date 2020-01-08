@@ -28,16 +28,19 @@ import inspect
 from tiktalik.error import TiktalikAPIError
 from . import command, auth
 
+
 def main():
     """Main module"""
     parent_parser = argparse.ArgumentParser(add_help=False)
     auth.add_parser_arguments(parent_parser)
 
-    parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     subparser = parser.add_subparsers(title="Commands", dest="command")
 
-    cmd2cls = {}   # command name -> command class
-    groups = {}    # group name -> list of command names
+    cmd2cls = {}  # command name -> command class
+    groups = {}  # group name -> list of command names
 
     # Autodiscover commands; map all commands to their names, as returned by Command.add_parser
     for cls in dir(command):
@@ -54,11 +57,13 @@ def main():
 
     general_epilog = "Commands by group:\n"
     for g_name in sorted(groups.keys()):
-        general_epilog += '\n  %s:\n' % g_name
-        general_epilog += ''.join("    - %s\n" % cmd for cmd in groups[g_name])
-    general_epilog += ("\nFor more information on a command run "
-                       "`%(prog)s <command> --help`,\neg. `%(prog)s info --help`\n"
-                       % {"prog": parser.prog})
+        general_epilog += "\n  %s:\n" % g_name
+        general_epilog += "".join("    - %s\n" % cmd for cmd in groups[g_name])
+    general_epilog += (
+        "\nFor more information on a command run "
+        "`%(prog)s <command> --help`,\neg. `%(prog)s info --help`\n"
+        % {"prog": parser.prog}
+    )
     parser.epilog = general_epilog
 
     args = parser.parse_args()
@@ -73,19 +78,23 @@ def main():
 
         cls(args, keyid, secret).execute()
     except auth.SecurityError:
-        msg = """File %s has too liberal access permissions.
+        msg = (
+            """File %s has too liberal access permissions.
 The file should be readable and writable by the owner only.
 You can fix this by executing:
-""" % auth.CONFIG_FILE_PATH
+"""
+            % auth.CONFIG_FILE_PATH
+        )
 
         print("Security error")
         print((textwrap.fill(msg, 76)))
         print()
-        print(('    chmod 600 %s' % auth.CONFIG_FILE_PATH))
+        print(("    chmod 600 %s" % auth.CONFIG_FILE_PATH))
     except (command.CommandError, TiktalikAPIError) as e:
         print((textwrap.fill("Error: " + str(e), 76)))
     except auth.AuthError as e:
         print((textwrap.fill("Error: " + str(e), 76)))
+
 
 if __name__ == "__main__":
     main()
