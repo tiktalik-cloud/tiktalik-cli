@@ -23,12 +23,13 @@ from tiktalik.loadbalancer import LoadBalancerConnection
 from .. import auth
 
 class CommandError(Exception):
-    pass
+    """Command threw an error"""
 
 class CommandAborted(Exception):
-    pass
+    """Command aborted"""
 
 class Command():
+    """Basic command"""
     def __init__(self, args, keyid, secret, connection_cls):
         self.args = args
         if connection_cls is not None:
@@ -36,21 +37,25 @@ class Command():
 
     @classmethod
     def add_parser(cls, parser, subparser):
+        """Parse command's args"""
         return None
 
     @classmethod
     def get_cmd_group_name(cls):
+        """Return command group"""
         return "General commands"
 
     def execute(self):
+        """Not implemented"""
         raise NotImplementedError()
 
     def yesno(self, message, abort=True):
+        """Listen for a yes/no answers"""
         print(message)
 
         answer = None
         while answer not in ("yes", "no"):
-            answer = eval(input("Please answer 'yes' or 'no' > "))
+            answer = input("Please answer 'yes' or 'no' > ")
 
         if answer == "yes":
             return True
