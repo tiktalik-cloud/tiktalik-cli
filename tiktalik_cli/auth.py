@@ -23,6 +23,7 @@ import os
 import stat
 import errno
 import configparser
+import base64
 
 class AuthError(Exception):
     """AuthError class"""
@@ -54,7 +55,7 @@ def get_credentials(args):
         raise AuthError(("Credentials not configured. "
                          "Try `tiktalik init-auth`, or use --key and --secret."))
 
-    return key, secret.decode("base64")
+    return key, base64.b64decode(secret)
 
 
 def read_from_file():
