@@ -24,12 +24,12 @@
 import argparse
 import textwrap
 import inspect
-import sys
 
 from tiktalik.error import TiktalikAPIError
 from . import command, auth
 
 def main():
+    """Main module"""
     parent_parser = argparse.ArgumentParser(add_help=False)
     auth.add_parser_arguments(parent_parser)
 
@@ -56,7 +56,9 @@ def main():
     for g_name in sorted(groups.keys()):
         general_epilog += '\n  %s:\n' % g_name
         general_epilog += ''.join("    - %s\n" % cmd for cmd in groups[g_name])
-    general_epilog += "\nFor more information on a command run `%(prog)s <command> --help`,\neg. `%(prog)s info --help`\n" % {"prog": parser.prog}
+    general_epilog += ("\nFor more information on a command run "
+                       "`%(prog)s <command> --help`,\neg. `%(prog)s info --help`\n"
+                       % {"prog": parser.prog})
     parser.epilog = general_epilog
 
     args = parser.parse_args()
