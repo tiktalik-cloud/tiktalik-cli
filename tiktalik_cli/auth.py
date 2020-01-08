@@ -35,10 +35,12 @@ CONFIG_DIR = os.path.expanduser("~/.tiktalik")
 CONFIG_FILE_PATH = os.path.join(CONFIG_DIR, "auth")
 
 def add_parser_arguments(parser):
+    """Add args to generic parser"""
     parser.add_argument("--key", dest="api_key", required=False, help="Your API Key")
     parser.add_argument("--secret", dest="api_secret", required=False, help="Your API Secret Key")
 
 def get_credentials(args):
+    """Read credentials from args"""
     # cmdline credentials override those stored in config file
     if args.api_key or args.api_secret:
         if not args.api_key or not args.api_secret:
@@ -56,6 +58,7 @@ def get_credentials(args):
 
 
 def read_from_file():
+    """Try to read from file"""
     try:
         st = os.stat(CONFIG_FILE_PATH)
     except OSError as ex:
