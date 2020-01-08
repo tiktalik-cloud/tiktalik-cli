@@ -75,7 +75,7 @@ def print_load_balancer(w):
                 print(("    %s" % d))
 
     if w.monitor:
-        print("  health monitor:")
+        print("  health monitor:", end=' ')
         m = w.monitor
         if m.check_type == 'tcp':
             print(("tcp-connection, interval %0.3f sec, timeout %0.3f sec" % (m.interval_ms/1000.0, m.timeout_ms/1000.0)))
