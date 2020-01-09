@@ -57,6 +57,10 @@ def main():
 
 	args = parser.parse_args()
 
+        if (args.command == None):
+            print general_epilog
+            sys.exit(1)
+
 	try:
 		if args.command != "init-auth":
 			keyid, secret = auth.get_credentials(args) 
