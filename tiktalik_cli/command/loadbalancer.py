@@ -80,7 +80,7 @@ class CreateLoadBalancer(LoadBalancerCommand):
         return "create-load-balancer"
 
     def execute(self):
-        name = self.args.name.decode(sys.stdin.encoding)
+        name = self.args.name
         backends = []
 
         # Roughly validate input
@@ -202,7 +202,7 @@ class RemoveLoadBalancerDomain(LoadBalancerCommand):
 
     def execute(self):
         balancer = self._wb_by_name(self.args.name)
-        domain = self.args.domain.decode(sys.stdin.encoding)
+        domain = self.args.domain
         balancer.remove_domain(domain)
 
 
@@ -217,7 +217,7 @@ class AddLoadBalancerDomain(LoadBalancerCommand):
 
     def execute(self):
         balancer = self._wb_by_name(self.args.name)
-        domain = self.args.domain.decode(sys.stdin.encoding)
+        domain = self.args.domain
         if domain in balancer.domains:
             raise CommandError("Domain '%s' already exists" % self.args.domain)
 
