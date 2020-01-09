@@ -6,7 +6,7 @@ user to perform core operations on the [Tiktalik Cloud Computing](http://www.tik
 ## Requirements
 
  * [tiktalik-python](https://github.com/tiktalik-cloud/tiktalik-python)
- * Python 2.7
+ * Python >=3.5
 
 Note that package dependencies are automatically installed by pip.
 
@@ -46,7 +46,7 @@ you started.
 
 ## License
 
-Copyright (c) 2013 Techstorage sp. z o.o.
+Copyright (c) 2020 Techstorage sp. z o.o.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of 
 this software and associated documentation files (the "Software"), to deal in 

@@ -3,7 +3,8 @@ from setuptools import setup
 
 setup(
     name="tiktalik-cli",
-    version="1.8.2",
+    version="1.9.3",
+    python_requires='>=3.5',
     description="Tiktalik Computing command line interface",
     author="Techstorage sp. z o.o.",
     author_email="kontakt@tiktalik.com",
@@ -16,5 +17,5 @@ setup(
     ],
     packages=["tiktalik_cli", "tiktalik_cli.command"],
     entry_points={"console_scripts": ["tiktalik = tiktalik_cli.main:main"]},
-    install_requires=["tiktalik>=1.5"],
+    install_requires=["tiktalik>=1.6.3"],
 )

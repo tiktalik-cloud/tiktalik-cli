@@ -24,6 +24,7 @@
 import argparse
 import textwrap
 import inspect
+import sys
 
 from tiktalik.error import TiktalikAPIError
 from . import command, auth
@@ -66,7 +67,11 @@ def main():
     )
     parser.epilog = general_epilog
 
-    args = parser.parse_args()
+    args = parser.parse_args() 
+    
+    if (args.command == None):
+        print(general_epilog)
+        sys.exit(1)
 
     try:
         if args.command != "init-auth":
