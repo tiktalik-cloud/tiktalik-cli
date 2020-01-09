@@ -35,6 +35,28 @@ class ListImages(ComputingImageCommand):
                 desc += ", private, %s" % i.create_time
             print(desc)
 
+class RenameImage(ComputingImageCommand):
+    @classmethod
+    def add_parser(cls, parent, subparser):
+        p = subparser.add_parser("rename-image", description="Rename an image.", parents=[parent])
+        p.add_argument("uuid", help="Image UUID. This image must belong to you.")
+        p.add_argument("name", help="New name for the image.")
+
+        return "rename-image"
+
+    def execute(self):
+        try:
+            self.conn.rename_image(self.args.uuid, self.args.name)
+        except TiktalikAPIError as ex:
+            if ex.http_status == 400:
+                raise CommandError("Invalid image name")
+            elif ex.http_status == 401:
+                raise CommandError("User unauthenticated")
+            elif ex.http_status == 404:
+                raise CommandError("Image doesn't exist in your account")
+            raise
+
+        print(("Image %s renamed to %s." % (self.args.uuid, self.args.name)))
 
 class DeleteImage(ComputingImageCommand):
     @classmethod
