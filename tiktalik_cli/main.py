@@ -67,9 +67,9 @@ def main():
     )
     parser.epilog = general_epilog
 
-    args = parser.parse_args() 
-    
-    if (args.command == None):
+    args = parser.parse_args()
+
+    if args.command is None:
         print(general_epilog)
         sys.exit(1)
 

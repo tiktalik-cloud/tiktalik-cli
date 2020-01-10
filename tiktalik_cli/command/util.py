@@ -18,8 +18,15 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+
 def print_iface(n):
-    print(("    eth%i addr: %s mac: %s network: %s" % (n.seq, n.ip, n.mac, n.network.name)))
+    print(
+        (
+            "    eth%i addr: %s mac: %s network: %s"
+            % (n.seq, n.ip, n.mac, n.network.name)
+        )
+    )
+
 
 def print_action(a):
     s = "%s, started at %s" % (a.description, a.start_time)
@@ -29,12 +36,18 @@ def print_action(a):
         s = "(In progress: %s%%) %s" % (a.progress, s)
     print(("     " + s))
 
+
 def print_instance(i, verbose=False):
     """
     Helper for printing instance details.
     """
 
-    print(("%s (%s) - %s" % (i.hostname, i.uuid, "Running" if i.running else "Not running")))
+    print(
+        (
+            "%s (%s) - %s"
+            % (i.hostname, i.uuid, "Running" if i.running else "Not running")
+        )
+    )
 
     if verbose and i.block_devices:
         for b in i.block_devices:
@@ -58,6 +71,7 @@ def print_instance(i, verbose=False):
     if verbose and i.gross_cost_per_hour:
         print(("  cost per hour: %.5f PLN/h" % i.gross_cost_per_hour))
 
+
 def print_load_balancer(w):
     """
     Helper for printing LoadBalancer details.
@@ -66,7 +80,7 @@ def print_load_balancer(w):
     print(("%s (%s) %s" % (w.name, w.uuid, w.status)))
     print(("  input: %s on %s:%d" % (w.type, w.address, w.port)))
 
-    if w.type == 'HTTP':
+    if w.type == "HTTP":
         if not w.domains:
             print("  no domains")
         else:
@@ -75,13 +89,28 @@ def print_load_balancer(w):
                 print(("    %s" % d))
 
     if w.monitor:
-        print("  health monitor:", end=' ')
+        print("  health monitor:", end=" ")
         m = w.monitor
-        if m.check_type == 'tcp':
-            print(("tcp-connection, interval %0.3f sec, timeout %0.3f sec" % (m.interval_ms/1000.0, m.timeout_ms/1000.0)))
-        elif m.check_type == 'http':
-            print(("http-request, interval %0.3f sec, timeout %0.3f sec, request \"%s %s\", expected %s" % \
-                    (m.interval_ms, m.timeout_ms, m.http_method, m.http_path, ",".join(m.http_expect_alive))))
+        if m.check_type == "tcp":
+            print(
+                (
+                    "tcp-connection, interval %0.3f sec, timeout %0.3f sec"
+                    % (m.interval_ms / 1000.0, m.timeout_ms / 1000.0)
+                )
+            )
+        elif m.check_type == "http":
+            print(
+                (
+                    'http-request, interval %0.3f sec, timeout %0.3f sec, request "%s %s", expected %s'
+                    % (
+                        m.interval_ms,
+                        m.timeout_ms,
+                        m.http_method,
+                        m.http_path,
+                        ",".join(m.http_expect_alive),
+                    )
+                )
+            )
         else:
             print("unknown")
 
@@ -95,6 +124,17 @@ def print_load_balancer(w):
     if w.history:
         print("  recent actions:")
         for h in w.history:
-            print(("    %s: (%s %s) %s %s" % (h.time, h.auth, h.ip, h.action, h.arguments if h.arguments else "")))
+            print(
+                (
+                    "    %s: (%s %s) %s %s"
+                    % (
+                        h.time,
+                        h.auth,
+                        h.ip,
+                        h.action,
+                        h.arguments if h.arguments else "",
+                    )
+                )
+            )
 
     print()

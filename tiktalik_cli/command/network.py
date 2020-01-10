@@ -20,25 +20,55 @@
 
 from .command import ComputingNetworkCommand
 
+
 class ListNetworks(ComputingNetworkCommand):
     @classmethod
     def add_parser(cls, parent, subparser):
-        subparser.add_parser("list-networks", description="List all available networks.", parents=[parent])
+        subparser.add_parser(
+            "list-networks",
+            description="List all available networks.",
+            parents=[parent],
+        )
         return "list-networks"
 
     def execute(self):
         networks = self.conn.list_networks()
         for net in networks:
-            print(("%s %s %s %s, owned by %s" % (net.name, net.uuid, net.net, "public" if net.public else "private", net.owner)))
+            print(
+                (
+                    "%s %s %s %s, owned by %s"
+                    % (
+                        net.name,
+                        net.uuid,
+                        net.net,
+                        "public" if net.public else "private",
+                        net.owner,
+                    )
+                )
+            )
+
 
 class CreateNetwork(ComputingNetworkCommand):
     @classmethod
     def add_parser(cls, parent, subparser):
-        p = subparser.add_parser("create-network", description="Create a new network.", parents=[parent])
+        p = subparser.add_parser(
+            "create-network", description="Create a new network.", parents=[parent]
+        )
         p.add_argument("name", help="Network name - as part of local domain.")
 
         return "create-network"
 
     def execute(self):
         network = self.conn.create_network(self.args.name)
-        print(("%s %s %s %s, owned by %s" % (network.name, network.uuid, network.net, "public" if network.public else "private", network.owner)))
+        print(
+            (
+                "%s %s %s %s, owned by %s"
+                % (
+                    network.name,
+                    network.uuid,
+                    network.net,
+                    "public" if network.public else "private",
+                    network.owner,
+                )
+            )
+        )

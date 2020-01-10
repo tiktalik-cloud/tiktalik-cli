@@ -24,13 +24,16 @@ import configparser
 from .command import GeneralCommand, CommandError
 from .. import auth
 
+
 class InitAuth(GeneralCommand):
     """Initialise auth"""
+
     @classmethod
     def add_parser(cls, parser, subparser):
-        p = subparser.add_parser("init-auth",
-                                 description="Store auth information "
-                                 "locally %s" % auth.CONFIG_FILE_PATH)
+        p = subparser.add_parser(
+            "init-auth",
+            description="Store auth information " "locally %s" % auth.CONFIG_FILE_PATH,
+        )
         p.add_argument("key", help="Your API Key")
         p.add_argument("secret", help="Your API Secret")
 
@@ -39,8 +42,10 @@ class InitAuth(GeneralCommand):
     def execute(self):
         key, secret = auth.read_from_file()
         if key:
-            raise CommandError("Authentication information already "
-                               "exists in " + auth.CONFIG_FILE_PATH)
+            raise CommandError(
+                "Authentication information already "
+                "exists in " + auth.CONFIG_FILE_PATH
+            )
 
         try:
             os.mkdir(auth.CONFIG_DIR)

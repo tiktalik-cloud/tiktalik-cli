@@ -22,14 +22,18 @@ from tiktalik.computing import ComputingConnection
 from tiktalik.loadbalancer import LoadBalancerConnection
 from .. import auth
 
+
 class CommandError(Exception):
     """Command threw an error"""
+
 
 class CommandAborted(Exception):
     """Command aborted"""
 
-class Command():
+
+class Command:
     """Basic command"""
+
     def __init__(self, args, keyid, secret, connection_cls):
         self.args = args
         if connection_cls is not None:
@@ -70,6 +74,7 @@ class GeneralCommand(Command):
     def __init__(self, args, keyid, secret):
         super(GeneralCommand, self).__init__(args, keyid, secret, None)
 
+
 class ComputingCommand(Command):
     def __init__(self, args, keyid, secret):
         super(ComputingCommand, self).__init__(args, keyid, secret, ComputingConnection)
@@ -78,19 +83,24 @@ class ComputingCommand(Command):
     def get_cmd_group_name(cls):
         return "Computing commands"
 
+
 class ComputingImageCommand(ComputingCommand):
     @classmethod
     def get_cmd_group_name(cls):
         return "Computing image commands"
+
 
 class ComputingNetworkCommand(ComputingCommand):
     @classmethod
     def get_cmd_group_name(cls):
         return "Computing network commands"
 
+
 class LoadBalancerCommand(Command):
     def __init__(self, args, keyid, secret):
-        super(LoadBalancerCommand, self).__init__(args, keyid, secret, LoadBalancerConnection)
+        super(LoadBalancerCommand, self).__init__(
+            args, keyid, secret, LoadBalancerConnection
+        )
 
     @classmethod
     def get_cmd_group_name(cls):

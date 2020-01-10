@@ -4,7 +4,7 @@ from setuptools import setup
 setup(
     name="tiktalik-cli",
     version="1.9.3",
-    python_requires='>=3.5',
+    python_requires=">=3.5",
     description="Tiktalik Computing command line interface",
     author="Techstorage sp. z o.o.",
     author_email="kontakt@tiktalik.com",
