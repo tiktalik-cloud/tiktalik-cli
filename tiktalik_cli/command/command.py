@@ -17,6 +17,7 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+import sys
 from tiktalik.computing import ComputingConnection
 from tiktalik.loadbalancer import LoadBalancerConnection
 from .. import auth
@@ -55,7 +56,8 @@ class Command(object):
 			return True
 
 		if abort:
-			raise CommandAborted()
+			print "Aborted"
+                        sys.exit(1)
 		else:
 			return False
 
