@@ -1,4 +1,3 @@
-*.sh
-build/
 dist/
 tiktalik_cli.egg-info/
+build/

@@ -71,7 +71,6 @@ class Command:
         else:
             return False
 
-
 class GeneralCommand(Command):
     def __init__(self, args, keyid, secret):
         super(GeneralCommand, self).__init__(args, keyid, secret, None)

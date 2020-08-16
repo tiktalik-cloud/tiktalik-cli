@@ -85,6 +85,7 @@ def main():
     except auth.SecurityError:
         msg = (
             """File %s has too liberal access permissions.
+
 The file should be readable and writable by the owner only.
 You can fix this by executing:
 """
