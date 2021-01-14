@@ -9,12 +9,11 @@ except ImportError:
     sys.exit(1)
 
 LONG_DESC = open('README.md').read()
-VERSION = "1.9.3.2",
-DOWNLOAD = "https://github.com/tiktalik-cloud/tiktalik-cli/archive/%s.tar.gz" % VERSION
+DOWNLOAD = "https://github.com/tiktalik-cloud/tiktalik-cli/archive/v1.9.3.2.tar.gz"
 
 setuptools.setup(
     name="tiktalik-cli",
-    version=VERSION,
+    version="1.9.3.2",
     python_requires=">=3.5",
     license="MIT",
     description="Tiktalik Computing command line interface",
@@ -43,7 +42,7 @@ setuptools.setup(
         "Operating System :: Microsoft :: Windows",
         "Topic :: Internet",
         "Topic :: Utilities",
-        "Topic :: Syetem :: Systems Administration",
+        "Topic :: System :: Systems Administration",
         "License :: OSI Approved :: MIT License",
     ],
     packages=["tiktalik_cli", "tiktalik_cli.command"],
