@@ -9,8 +9,8 @@ except ImportError:
     sys.exit(1)
 
 LONG_DESC = open('README.md').read()
-VERSION = "1.9.3.1",
-DOWNLOAD = "https://github.com/tiktalik/tiktalik-cli/archive/%s.tar.gz" % VERSION
+VERSION = "1.9.3.2",
+DOWNLOAD = "https://github.com/tiktalik-cloud/tiktalik-cli/archive/%s.tar.gz" % VERSION
 
 setuptools.setup(
     name="tiktalik-cli",
