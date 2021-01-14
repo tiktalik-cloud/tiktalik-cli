@@ -83,7 +83,7 @@ def read_from_file():
         else:
             print(("Unable to access %s: %s" % (CONFIG_FILE_PATH, ex)))
 
-    if stat.S_IMODE(st.st_mode) != 0o600:
+    if (stat.S_IMODE(st.st_mode) != 0o600) and (os.name == 'posix'):
         raise SecurityError()
 
     cfg = configparser.SafeConfigParser()

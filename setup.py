@@ -1,32 +1,49 @@
 """Tiktalik Command Line Interface"""
-from distutils.core import setup
-from os import path
-this_directory = path.abspath(path.dirname(__file__))
-with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
-    long_description = f.read()
+import sys
+import setuptools
 
-setup(
+try:
+    import tiktalik_cli
+except ImportError:
+    print("error: tiktalik-cli requires Python 3.5 or greater.")
+    sys.exit(1)
+
+LONG_DESC = open('README.md').read()
+VERSION = "1.9.3.1",
+DOWNLOAD = "https://github.com/tiktalik/tiktalik-cli/archive/%s.tar.gz" % VERSION
+
+setuptools.setup(
     name="tiktalik-cli",
-    version="1.9.3.1",
+    version=VERSION,
     python_requires=">=3.5",
     license="MIT",
     description="Tiktalik Computing command line interface",
-    long_description=long_description,
-    long_description_content_type='text/markdown',
+    long_description_content_type="text/markdown",
+    long_description=LONG_DESC,
     author="Techstorage sp. z o.o.",
     author_email="kontakt@tiktalik.com",
     url="http://www.tiktalik.com",
-    keywords=["Tiktalik", "CLI", "Terminal"],
+    download_url=DOWNLOAD,
+    keywords=["Tiktalik", "CLI", "Terminal", "VPS"],
     classifiers=[
-        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3 :: Only",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
-        "Development Status :: 5 - Production/Stable",
-        "Intended Audience :: Users",
+        "Programming Language :: Python :: 3.9",
+        "Development Status :: 6 - Mature",
+        "Environment :: Console",
+        "Intended Audience :: Developers",
+        "Intended Audience :: System Administrators",
+        "Intended Audience :: Information Technology",
+        "Intended Audience :: End Users/Desktop",
+        "Natural Language :: English",
+        "Operating System :: POSIX",
+        "Operating System :: Microsoft :: Windows",
         "Topic :: Internet",
         "Topic :: Utilities",
+        "Topic :: Syetem :: Systems Administration",
         "License :: OSI Approved :: MIT License",
     ],
     packages=["tiktalik_cli", "tiktalik_cli.command"],
