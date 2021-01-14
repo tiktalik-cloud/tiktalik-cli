@@ -87,7 +87,7 @@ class RenameImage(ComputingImageCommand):
                 raise CommandError("Image doesn't exist in your account")
             raise
 
-        print "Image %s renamed to %s." % (self.args.uuid, self.args.name)
+        print("Image %s renamed to %s." % (self.args.uuid, self.args.name))
 
 class DeleteImage(ComputingImageCommand):
     @classmethod
